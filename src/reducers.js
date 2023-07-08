@@ -1,3 +1,6 @@
+import { NOT_EKLE, NOT_SIL } from "./actions";
+import { toast } from "react-toastify";
+
 const s10chLocalStorageKey = "s10ch";
 
 const baslangicDegerleri = {
@@ -24,6 +27,29 @@ function baslangicNotlariniGetir(key) {
   if (eskiNotlar) {
     return localStorageStateOku(key);
   } else {
-    return baslangicDegerleri
+    return baslangicDegerleri;
   }
 }
+
+export const reducer = (
+  state = baslangicNotlariniGetir(s10chLocalStorageKey),
+  action
+) => {
+  switch (action.type) {
+    case NOT_EKLE:
+      let newState = { ...state, notlar: [...state.notlar, action.payload] };
+      localStorageStateYaz(s10chLocalStorageKey, newState);
+      toast.success("Başarıyla eklendi!");
+      return newState;
+    case NOT_SIL:
+      let newDeleteState = {
+        ...state,
+        notlar: state.notlar.filter((i) => i.id !== action.payload),
+      };
+      localStorageStateYaz(s10chLocalStorageKey, newDeleteState);
+      toast.success("Silindi!");
+      return newDeleteState;
+    default:
+      return state;
+  }
+};
